@@ -1,29 +1,47 @@
-# Bird_counting-and-weight_estimation
-Project Overview
-This project implements an end-to-end bird (poultry) counting system using YOLOv8 object detection and tracking. The system processes video inputs to:
+---
 
-Detect birds (COCO class: bird)
-Track unique birds across frames
-Count birds per frame
-Estimate approximate bird weight
-Generate annotated videos
-Produce structured JSON analytics
-Provide a FastAPI backend for video uploads and processing
-The solution is optimized for real-world poultry farm footage where noise (eggs, roofs, cages) and long video durations are common.
+# Bird Counting & Weight Estimation System
 
-Key Features
-✅ YOLOv8-based bird detection
-✅ Persistent tracking with unique IDs
-✅ Frame-wise bird count
-✅ Total unique bird count
-✅ Bounding-box-based weight estimation
-✅ Region-based frame cropping (noise reduction)
-✅ Frame skipping for performance
-✅ Annotated output videos
-✅ JSON-based analytical output
-✅ REST API for video uploads (FastAPI)
-✅ Accuracy & stability analysis with crop info
-System Architecture
+**Computer Vision · YOLOv8 · FastAPI**
+
+---
+
+## Project Overview
+
+This project implements an **end-to-end bird (poultry) counting system** using **YOLOv8 object detection and tracking**.
+The system processes video inputs to:
+
+- Detect birds (COCO class: bird)
+- Track **unique birds across frames**
+- Count **birds per frame**
+- Estimate **approximate bird weight**
+- Generate **annotated videos**
+- Produce structured **JSON analytics**
+- Provide a **FastAPI backend** for video uploads and processing
+
+The solution is optimized for **real-world poultry farm footage** where noise (eggs, roofs, cages) and long video durations are common.
+
+---
+
+## Key Features
+
+- ✅ YOLOv8-based bird detection
+- ✅ Persistent tracking with unique IDs
+- ✅ Frame-wise bird count
+- ✅ Total unique bird count
+- ✅ Bounding-box-based weight estimation
+- ✅ Region-based frame cropping (noise reduction)
+- ✅ Frame skipping for performance
+- ✅ Annotated output videos
+- ✅ JSON-based analytical output
+- ✅ REST API for video uploads (FastAPI)
+- ✅ **Accuracy & stability analysis with crop info**
+
+---
+
+## System Architecture
+
+```
 Video Upload
     ↓
 Frame Preprocessing (crop + skip)
@@ -35,7 +53,13 @@ Bird Analyzer (counts + IDs)
 Weight Estimation
     ↓
 Annotated Video + JSON Output
-Project Folder Structure
+```
+
+---
+
+## Project Folder Structure
+
+```
 BIRD_COUNTING_PROJECT/
 │
 ├── app/
@@ -66,34 +90,77 @@ BIRD_COUNTING_PROJECT/
 ├── requirements.txt
 ├── yolov8n.pt                # YOLOv8 weights
 └── README.md
-Installation & Setup
-1. Create virtual environment (recommended)
+```
+
+---
+
+## Installation & Setup
+
+### 1. Create virtual environment (recommended)
+
+```bash
 conda create -n birdcount python=3.10
 conda activate birdcount
-2. Install dependencies
+```
+
+### 2. Install dependencies
+
+```bash
 pip install -r requirements.txt
-Running the Backend (FastAPI)
+```
+
+---
+
+## Running the Backend (FastAPI)
+
 Start the server from project root:
 
+```bash
 uvicorn app.main:app --reload
+```
+
 Server runs at:
 
+```
 http://127.0.0.1:8000
+```
+
 Swagger UI:
 
+```
 http://127.0.0.1:8000/docs
-Uploading & Processing a Video
-Endpoint
+```
+
+---
+
+## Uploading & Processing a Video
+
+### Endpoint
+
+```
 POST /process-video/
-Input
-Video file (.mp4)
-Output
-Annotated video (annotated_<name>.mp4)
-JSON analytics (<name>_results.json)
+```
+
+### Input
+
+- Video file (`.mp4`)
+
+### Output
+
+- Annotated video (`annotated_<name>.mp4`)
+- JSON analytics (`<name>_results.json`)
+
 Both are saved automatically to:
 
+```
 uploads/
-JSON Output Structure
+```
+
+---
+
+## JSON Output Structure
+
+```json
 {
   "summary": {
     "total_unique_birds": 5,
@@ -111,41 +178,70 @@ JSON Output Structure
     ]
   }
 }
-Performance Optimizations
-🔹 Frame Cropping
-Removes top 30% of frame to eliminate:
+```
 
-Eggs
-Roofs
-Hatchery noise
-🔹 Frame Skipping
-Processes every 5th frame
-Reduces compute while preserving tracking accuracy
-🔹 Persistent Tracking
-Unique IDs maintained across frames using YOLOv8 tracking
-Weight Estimation Logic
-Bird weight is estimated using bounding box area:
+---
 
+## Performance Optimizations
+
+### 🔹 Frame Cropping
+
+- Removes **top 30%** of frame to eliminate:
+
+  - Eggs
+  - Roofs
+  - Hatchery noise
+
+### 🔹 Frame Skipping
+
+- Processes **every 5th frame**
+- Reduces compute while preserving tracking accuracy
+
+### 🔹 Persistent Tracking
+
+- Unique IDs maintained across frames using YOLOv8 tracking
+
+---
+
+## Weight Estimation Logic
+
+Bird weight is estimated using **bounding box area**:
+
+```python
 weight ≈ bbox_area × scale_factor
-Provides an approximate but consistent estimate suitable for analytics (not medical use).
+```
 
-Accuracy & Stability Analysis
+Provides an **approximate but consistent estimate** suitable for analytics (not medical use).
+
+---
+
+## Accuracy & Stability Analysis
+
 Run:
 
+```bash
 python experiments/accuracy_check.py
-What it does:
-Loads all JSON results from outputs/detections/
+```
 
-Computes:
+### What it does:
 
-Detection coverage (frames with birds / total frames)
-Track persistence (frames per bird ID)
-Average birds per frame
-Original vs cropped frame heights (top 30% crop removed)
-Saves per-video accuracy JSON in:
+- Loads all JSON results from `outputs/detections/`
+- Computes:
 
+  - Detection coverage (frames with birds / total frames)
+  - Track persistence (frames per bird ID)
+  - Average birds per frame
+  - **Original vs cropped frame heights** (top 30% crop removed)
+
+- Saves per-video accuracy JSON in:
+
+```
 outputs/experiment/
-Example output (JSON):
+```
+
+### Example output (JSON):
+
+```json
 {
   "video": "poultry3_results.json",
   "total_frames": 18612,
@@ -159,24 +255,50 @@ Example output (JSON):
   "original_frame_height": 720,
   "cropped_frame_height": 504
 }
-Local Testing (Without API)
+```
+
+---
+
+## Local Testing (Without API)
+
+```bash
 python test_detector.py
+```
+
 Useful for:
 
-Debugging detection
-Verifying tracking
-Offline experimentation
-What This Project Demonstrates
-Real-world CV pipeline design
-Efficient long-video processing
-Modular, production-ready code
-REST API integration
-Practical ML engineering decisions
+- Debugging detection
+- Verifying tracking
+- Offline experimentation
+
+---
+
+## What This Project Demonstrates
+
+- Real-world CV pipeline design
+- Efficient long-video processing
+- Modular, production-ready code
+- REST API integration
+- Practical ML engineering decisions
+
 -Public poultry videos were used for testing. Sample inputs and outputs are included in the repository.
-Future Improvements
-Bird re-identification across camera cuts
-Real-world calibrated weight models
-GPU batch inference
-Frontend dashboard
-Multi-camera support
-Author : Jalagam Dolender 
+---
+
+## Future Improvements
+
+- Bird re-identification across camera cuts
+- Real-world calibrated weight models
+- GPU batch inference
+- Frontend dashboard
+- Multi-camera support
+
+---
+
+## Author
+
+**Jalagam Dolender**
+B.Tech CSE (AI/ML)
+Focus: Computer Vision, Deep Learning, Applied AI.
+
+---
+
